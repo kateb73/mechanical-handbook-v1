@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+
+# MkDocs build output
+site/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Docker build cache (optional)
+**/.pytest_cache/

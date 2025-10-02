@@ -1,0 +1,21 @@
+# ---- Build stage: compile MkDocs to static HTML ----
+FROM python:3.12-slim AS build
+
+WORKDIR /site
+COPY mkdocs.yml .
+COPY docs ./docs
+
+RUN pip install --no-cache-dir mkdocs mkdocs-material
+RUN mkdocs build --site-dir /out
+
+# ---- Runtime stage: Nginx serving static + reverse proxy to Dash ----
+FROM nginx:alpine
+
+# Copy built site
+COPY --from=build /out /usr/share/nginx/html
+
+# Nginx config (routes /apps/* to the 'dash' service on :8050)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

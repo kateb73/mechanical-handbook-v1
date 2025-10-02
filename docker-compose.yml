@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+
+  #dash:
+  #  build:
+  #    context: .
+  #    dockerfile: Dockerfile.dash
+  #  restart: unless-stopped
+  #  expose:
+  #    - "8050"   # internal only (Nginx talks to this)
+    # If your Dash app reads files, mount them as needed:
+    # volumes:
+    #   - ./apps:/app/apps:ro
+
+  site:
+    build:
+      context: .
+      dockerfile: Dockerfile.site
+    #depends_on:
+    #  - dash
+    ports:
+      - "8080:80"   # visit http://localhost:8080
+    restart: unless-stopped
+    # volumes:
+    #   - ./docs:/usr/share/nginx/html  # only if you want to live-edit (not recommended for prod)

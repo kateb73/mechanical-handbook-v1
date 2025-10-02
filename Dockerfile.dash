@@ -1,0 +1,22 @@
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# System deps (optional but nice to have)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential && rm -rf /var/lib/apt/lists/*
+
+# Install Python deps
+COPY requirements-dash.txt .
+RUN pip install --no-cache-dir -r requirements-dash.txt
+
+# Copy app
+COPY apps/ ./apps/
+
+# Gunicorn will serve Dash; your app object is apps.app:app
+# Dash exposes a WSGI server at app.server
+EXPOSE 8050
+CMD ["gunicorn", "-w", "2", "-k", "gthread", "-b", "0.0.0.0:8050", "apps.app:app.server"]
