@@ -5,18 +5,18 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# System deps (optional but nice to have)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Python deps
 COPY requirements-dash.txt .
 RUN pip install --no-cache-dir -r requirements-dash.txt
 
-# Copy app
+# copy app code
 COPY apps/ ./apps/
 
-# Gunicorn will serve Dash; your app object is apps.app:app
-# Dash exposes a WSGI server at app.server
+# Render sets $PORT at runtime; bind to it
+ENV PORT=8050
 EXPOSE 8050
-CMD ["gunicorn", "-w", "2", "-k", "gthread", "-b", "0.0.0.0:8050", "apps.app:app.server"]
+
+# NOTE: your Dash app object is apps.app:app and WSGI server is app.server
+CMD ["sh","-c","gunicorn -w 2 -k gthread -b 0.0.0.0:${PORT} apps.app:app.server"]
